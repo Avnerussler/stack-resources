@@ -1,13 +1,10 @@
 import React from "react";
-import logo from "./logo.svg";
+import { Grid } from "./component/Grid";
+
 import "./App.css";
 
 const App = () => {
-  return (
-    <div>
-      <div>csdc</div>
-    </div>
-  );
+  return <Grid></Grid>;
 };
 
 export default App;

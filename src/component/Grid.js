@@ -3,85 +3,84 @@ import _ from "lodash";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridReact } from "ag-grid-react";
-import { GridApi } from "ag-grid-community";
+import { columnData, rowData } from "../data";
 
-const columnDefs = [
-  { headerName: "Department", field: "department", sortable: true },
-  { headerName: "Num of Stacks", field: "numOfStacks", sortable: true },
-  { headerName: "Usage", field: "usage", sortable: true },
-  { headerName: "Owners", field: "owners", sortable: true },
-  { headerName: "Stack Type", field: "stackType", sortable: true },
-  { headerName: "RAM [GB]", field: "RAM", sortable: true },
-  { headerName: "Not assigned", field: "notAssigned", sortable: true },
-  {
-    headerName: "Allocation Capacity [GB]",
-    field: "allocationCapacity",
-    sortable: true,
-  },
-  {
-    headerName: "Physical Usage [GB]",
-    field: "physicalUsage",
-    sortable: true,
-  },
-  { headerName: "CPU", field: "CPU", sortable: true },
-];
-
-// console.log(rowData);
-
-// console.log(sumOfStacks);
+const columnDefs = columnData;
 
 const defaultColDef = {
   flex: 1,
-  // minWidth: 110,
   editable: true,
   resizable: true,
-  // width: a,
+  rowSelection: "multiple",
 };
 
 export const Grid = () => {
-  const [rowData, setRowData] = useState([
-    {
-      department: "ps",
-      numOfStacks: 6,
-      usage: "Rakuten, Veon, Globe, Customers, Training",
-      owners: " Nimrod",
-      stackType: "Standard Jenkins Stack",
-      RAM: 1128,
-      notAssigned: 316,
-      allocationCapacity: 16800,
-      physicalUsage: 582.8,
-      CPU: 564,
-    },
-    {
-      department: "ps",
-      numOfStacks: 6,
-      usage: "Rakuten, Veon, Globe, Customers, Training",
-      owners: " Nimrod",
-      stackType: "Standard Jenkins Stack",
-      RAM: 1128,
-      notAssigned: 316,
-      allocationCapacity: 16800,
-      physicalUsage: 582.8,
-      CPU: 564,
-    },
-  ]);
+  const [rowD, setRowD] = useState(rowData);
   const handleChange = (e) => {
-    let d = [...rowData];
+    let d = [...rowD];
     d[e.rowIndex][e.colDef.field] = parseInt(e.newValue);
+    setRowD(d);
   };
   const [sumOfStacks, setSumOfStacks] = useState("");
+  const [idNum, setIdNum] = useState(rowData.length);
 
   useEffect(() => {
-    setSumOfStacks(_.sumBy(rowData, "numOfStacks"));
-  }, [rowData]);
+    setSumOfStacks(_.sumBy(rowD, "numOfStacks"));
+  }, [rowD]);
 
-  let sumOfRam = _.sumBy(rowData, "RAM") / 1024;
-  let sumAllocationCapacity = _.sumBy(rowData, "allocationCapacity") / 1024;
+  let sumOfRam = _.sumBy(rowD, "RAM") / 1024;
+  let sumAllocationCapacity = _.sumBy(rowD, "allocationCapacity") / 1024;
+
+  let newData = {
+    id: idNum,
+    department: "",
+    numOfStacks: 0,
+    usage: "",
+    owners: "",
+    stackType: "",
+    RAM: 0,
+    notAssigned: 0,
+    allocationCapacity: 0,
+    physicalUsage: 0,
+    CPU: 0,
+  };
+  const [selected, setSelected] = useState();
+  const handleSelectionChange = (e) => {
+    setSelected(e.api);
+  };
+  // console.log("selected:", selected);
+  const addNewRow = () => {
+    setRowD((rowD) => [...rowD, newData]);
+    setIdNum(idNum + 1);
+  };
+  // let gridApi;
+  // const onGridReady = (event) => {
+  //   gridApi = event.api;
+  //   console.log(gridApi);
+  // };
+
+  const removeSelected = () => {
+    let selectedData = selected.getSelectedRows();
+    // console.log("selected:", selectedData);
+    setRowD(
+      _.difference(rowD, selectedData)
+      // rowD.filter(
+      //   (item) =>
+      //     (console.log("item:", item), item.id) !==
+      //     selectedData.map(
+      //       (element) => (element, console.log("element", element))
+      //     )
+      // )
+    );
+  };
+  // console.log("data", rowD);
   return (
     <div>
       <p>{`Sum Of Stacks: ${sumOfStacks}`}</p>
       <p>{`Sum Of RAM: ${sumOfRam}`}</p>
       <p>{`Sum Of Allocation Capacity: ${sumAllocationCapacity}`}</p>
+      <button onClick={addNewRow}>add row</button>
+      <button onClick={removeSelected}>Remove Selected</button>
 
       <div
         className="ag-theme-alpine"
@@ -89,18 +88,15 @@ export const Grid = () => {
       >
         <AgGridReact
           columnDefs={columnDefs}
-          rowData={rowData}
+          rowData={rowD}
           defaultColDef={defaultColDef}
           onCellValueChanged={(e) => {
             handleChange(e);
           }}
-          // celDef.edit
-          // columns={columns}
-          // rows={rows}
-          // // rowGetter={(i) => rows[i]}
-          // // rowsCount={4}
-          // onGridRowsUpdated={handleUpdate}
-          // enableCellSelect={true}
+          // onGridReady={onGridReady}
+          rowSelection={defaultColDef.rowSelection}
+          rowDataChangeDetectionStrategy="IdentityCheck"
+          onSelectionChanged={handleSelectionChange}
         />
       </div>
     </div>

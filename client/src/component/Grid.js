@@ -18,29 +18,23 @@ export const Grid = () => {
   const [rowD, setRowD] = useState(rowData);
   const handleChange = (e) => {
     let d = [...rowD];
-    let fieldName = e.colDef.field;
+
+    let fieldName=e.colDef.field
+console.log("name:",e.colDef.field)
     if (
-      (fieldName = "numOfStacks") ||
-      "RAM"
-      // ||
-      // "notAssigned" ||
-      // "allocationCapacity" ||
-      // "physicalUsage" ||
-      // "CPU"
+    fieldName === "numOfStacks" ||
+    fieldName ==="RAM" ||
+    fieldName ==="notAssigned" ||
+    fieldName === "allocationCapacity" ||   
+    fieldName === "physicalUsage" ||
+    fieldName === "CPU"
     ) {
       d[e.rowIndex][e.colDef.field] = parseInt(e.newValue);
       console.log("field is number");
+     
     } else {
       d[e.rowIndex][e.colDef.field] = e.newValue;
     }
-    // if ((typeof d[e.rowIndex][e.colDef.field] = "number")) {
-    // } else {
-    // }
-    // console.log(typeof e.newValue);
-    console.log(e.colDef.field);
-
-    // console.log(d[e.rowIndex][e.colDef.field]);
-
     setRowD(d);
   };
   const [sumOfStacks, setSumOfStacks] = useState("");

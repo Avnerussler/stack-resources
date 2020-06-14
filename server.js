@@ -22,6 +22,14 @@ connection.once("open", () => {
   console.log("app is connected to mongoDB");
 });
 
+
+const row=require('./models/row.model');
+const column=require('./models/column.model');
+
+
+app.use('/row',row);
+app.use('/column',column);
+
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });

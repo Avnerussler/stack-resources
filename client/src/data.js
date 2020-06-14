@@ -3,6 +3,7 @@ export const columnData = [
     headerName: "Department",
     field: "department",
     sortable: true,
+    
   },
   { headerName: "Num of Stacks", field: "numOfStacks", sortable: true },
   { headerName: "Usage", field: "usage", sortable: true },

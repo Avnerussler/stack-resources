@@ -23,8 +23,8 @@ connection.once("open", () => {
 });
 
 
-const row=require('./models/row.model');
-const column=require('./models/column.model');
+const row=require('./routes/row');
+const column=require('./routes/column');
 
 
 app.use('/row',row);

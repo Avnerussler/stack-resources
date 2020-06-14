@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const rowSchema = new Schema(
+const columnSchema = new Schema(
   {
     department: {type:String},
     numOfStacks:  {type:String},
@@ -19,6 +19,6 @@ const rowSchema = new Schema(
   }
 );
 
-const Row = mongoose.model("Row", rowSchema);
+const Column = mongoose.model("Column", columnSchema);
 
-module.exports = Row;
+module.exports = Column;

@@ -3,9 +3,6 @@ export const columnData = [
     headerName: "Department",
     field: "department",
     sortable: true,
-    // valueGetter: function (params) {
-    //   return params.node.rowIndex;
-    // },
   },
   { headerName: "Num of Stacks", field: "numOfStacks", sortable: true },
   { headerName: "Usage", field: "usage", sortable: true },

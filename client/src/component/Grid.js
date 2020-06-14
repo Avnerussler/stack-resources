@@ -4,6 +4,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridReact } from "ag-grid-react";
 import { columnData, rowData } from "../data";
+import axios from "axios";
 
 const columnDefs = columnData;
 
@@ -18,20 +19,21 @@ export const Grid = () => {
   const [rowD, setRowD] = useState(rowData);
   const handleChange = (e) => {
     let d = [...rowD];
-
-    let fieldName=e.colDef.field
-// console.log("name:",e.colDef.field)
+    let fieldName = e.colDef.field;
+    // console.log("name:",e.colDef.field)
     if (
-    fieldName === "numOfStacks" ||
-    fieldName ==="RAM" ||
-    fieldName ==="notAssigned" ||
-    fieldName === "allocationCapacity" ||   
-    fieldName === "physicalUsage" ||
-    fieldName === "CPU"
+      fieldName === "numOfStacks" ||
+      fieldName === "RAM" ||
+      fieldName === "notAssigned" ||
+      fieldName === "allocationCapacity" ||
+      fieldName === "physicalUsage" ||
+      fieldName === "CPU"
     ) {
-      d[e.rowIndex][e.colDef.field] = parseInt(e.newValue);
-      console.log("field is number");
-     
+      // d[e.rowIndex][e.colDef.field] = parseFloat(e.newValue);
+      // axios
+      //   .post("http://localhost:5000/row/add", d)
+      //   .then((res) => console.log(res.data));
+      // console.log("field is number");
     } else {
       d[e.rowIndex][e.colDef.field] = e.newValue;
     }
@@ -50,15 +52,15 @@ export const Grid = () => {
   let newData = {
     id: idNum,
     department: "",
-    numOfStacks: 0,
+    numOfStacks: "",
     usage: "",
     owners: "",
     stackType: "",
-    RAM: 0,
-    notAssigned: 0,
-    allocationCapacity: 0,
-    physicalUsage: 0,
-    CPU: 0,
+    RAM: "",
+    notAssigned: "",
+    allocationCapacity: "",
+    physicalUsage: "",
+    CPU: "",
   };
   const [selected, setSelected] = useState();
   const handleSelectionChange = (e) => {
@@ -100,7 +102,7 @@ export const Grid = () => {
 
       <div
         className="ag-theme-alpine"
-        style={{ height: "500px", width: "100%" }}
+        style={{ height: "500px", width: "100%", textAlign: "center" }}
       >
         <AgGridReact
           columnDefs={columnDefs}

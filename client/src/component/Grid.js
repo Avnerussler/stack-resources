@@ -20,7 +20,7 @@ export const Grid = () => {
     let d = [...rowD];
 
     let fieldName=e.colDef.field
-console.log("name:",e.colDef.field)
+// console.log("name:",e.colDef.field)
     if (
     fieldName === "numOfStacks" ||
     fieldName ==="RAM" ||

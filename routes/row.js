@@ -3,8 +3,13 @@ let Row = require("../models/row.model");
 
 router.route("/").get((req, res) => {
   Row.find()
-    .then((row) => res.json(row))
-    .catch((err) => res.status(400).json("Error" + err));
+    .then((rows) => res.json(rows))
+    .catch((err) => res.status(400).json("Error: " + err));
+});
+router.route("/:id").delete((req, res) => {
+  Exercise.findByIdAndDelete(req.params.id)
+    .then(() => res.json("Exercise deleted."))
+    .catch((err) => res.status(400).json("Error: " + err));
 });
 
 router.route("/add").post((req, res) => {

@@ -29,10 +29,8 @@ export const Grid = () => {
       fieldName === "physicalUsage" ||
       fieldName === "CPU"
     ) {
-      // d[e.rowIndex][e.colDef.field] = parseFloat(e.newValue);
-      // axios
-      //   .post("http://localhost:5000/row/add", d)
-      //   .then((res) => console.log(res.data));
+      d[e.rowIndex][e.colDef.field] = parseFloat(e.newValue);
+
       // console.log("field is number");
     } else {
       d[e.rowIndex][e.colDef.field] = e.newValue;
@@ -45,6 +43,11 @@ export const Grid = () => {
   useEffect(() => {
     setSumOfStacks(_.sumBy(rowD, "numOfStacks"));
   }, [rowD]);
+  useEffect(() => {
+    axios.get("http://localhost:5000/row").then((res) => {
+      return setRowD(res.data), console.log(res.data);
+    });
+  }, []);
 
   let sumOfRam = _.sumBy(rowD, "RAM") / 1024;
   let sumAllocationCapacity = _.sumBy(rowD, "allocationCapacity") / 1024;
@@ -68,6 +71,10 @@ export const Grid = () => {
   };
   console.log("selected:", selected);
   const addNewRow = () => {
+    axios
+      .post("http://localhost:5000/row/add", newData)
+      .then((res) => console.log(res.data));
+
     setRowD((rowD) => [...rowD, newData]);
     setIdNum(idNum + 1);
   };

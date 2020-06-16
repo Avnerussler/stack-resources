@@ -1,6 +1,5 @@
 const router = require("express").Router();
 let Row = require("../models/row.model");
-const { json } = require("express");
 
 router.route("/").get((req, res) => {
   Row.find()
@@ -36,6 +35,20 @@ router.route("/add").post((req, res) => {
     .save()
     .then(() => res.json("row add"))
     .catch((err) => res.status(400).json("Error:" + err));
+});
+
+router.put("/update/:id", (req, res) => {
+  let id = req.params.id;
+  Row.findOne({ _id: id }, (err, foundObject) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send();
+    } else {
+      if (!foundObject) {
+        res.status(404).send();
+      }
+    }
+  });
 });
 
 module.exports = router;

@@ -66,7 +66,7 @@ export const Grid = () => {
   const handleSelectionChange = (e) => {
     setSelected(e.api);
   };
-  // console.log("selected:", selected);
+  console.log("selected:", selected);
   const addNewRow = () => {
     setRowD((rowD) => [...rowD, newData]);
     setIdNum(idNum + 1);

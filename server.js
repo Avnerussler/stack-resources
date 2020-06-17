@@ -22,13 +22,11 @@ connection.once("open", () => {
   console.log("app is connected to mongoDB");
 });
 
+const row = require("./routes/row");
+const column = require("./routes/column");
 
-const row=require('./routes/row');
-const column=require('./routes/column');
-
-
-app.use('/row',row);
-app.use('/column',column);
+app.use("/row", row);
+app.use("/column", column);
 
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);

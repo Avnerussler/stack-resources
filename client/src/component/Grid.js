@@ -3,8 +3,9 @@ import _ from "lodash";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridReact } from "ag-grid-react";
-import { columnData, rowData } from "../data";
+import { columnData } from "../data";
 import axios from "axios";
+import { Spin } from "antd";
 
 const columnDefs = columnData;
 
@@ -16,7 +17,9 @@ const defaultColDef = {
 };
 
 export const Grid = () => {
-  const [rowD, setRowD] = useState(rowData);
+  const [rowD, setRowD] = useState("");
+  // console.log(rowD);
+
   const handleChange = (e) => {
     let d = [...rowD];
     let fieldName = e.colDef.field;
@@ -38,14 +41,15 @@ export const Grid = () => {
     setRowD(d);
   };
   const [sumOfStacks, setSumOfStacks] = useState("");
-  const [idNum, setIdNum] = useState(rowData.length);
+  // const [idNum, setIdNum] = useState(rowD.length);
 
   useEffect(() => {
     setSumOfStacks(_.sumBy(rowD, "numOfStacks"));
   }, [rowD]);
+  const [loader, setLoader] = useState(true);
   useEffect(() => {
     axios.get("http://localhost:5000/row").then((res) => {
-      return setRowD(res.data), console.log(res.data);
+      return setLoader(false), setRowD(res.data), console.log(res.data);
     });
   }, []);
 
@@ -53,7 +57,6 @@ export const Grid = () => {
   let sumAllocationCapacity = _.sumBy(rowD, "allocationCapacity") / 1024;
 
   let newData = {
-    id: idNum,
     department: "",
     numOfStacks: "",
     usage: "",
@@ -69,14 +72,16 @@ export const Grid = () => {
   const handleSelectionChange = (e) => {
     setSelected(e.api);
   };
-  console.log("selected:", selected);
-  const addNewRow = () => {
-    axios
-      .post("http://localhost:5000/row/add", newData)
-      .then((res) => console.log(res.data));
+  // console.log("selected:", selected);
 
-    setRowD((rowD) => [...rowD, newData]);
-    setIdNum(idNum + 1);
+  const addNewRow = () => {
+    axios.post("http://localhost:5000/row", newData).then((res) => {
+      console.log(res.data);
+      window.location.reload();
+    });
+    setLoader(false);
+    // setRowD((rowD) => [...rowD, newData]);
+    // setIdNum(idNum + 1);
   };
   // let gridApi;
   // const onGridReady = (event) => {
@@ -85,18 +90,23 @@ export const Grid = () => {
   // };
 
   const removeSelected = () => {
-    let selectedData = selected.getSelectedRows();
+    let selectedData;
+    if (selected) {
+      selectedData = selected.getSelectedRows();
+      axios
+        .delete("http://localhost:5000/row/" + selectedData[0]._id)
+        .then((res) => window.location.reload());
+    } else {
+      alert("choos row");
+    }
     // console.log("selected:", selectedData);
-    setRowD(
-      _.difference(rowD, selectedData)
-      // rowD.filter(
-      //   (item) =>
-      //     (console.log("item:", item), item.id) !==
-      //     selectedData.map(
-      //       (element) => (element, console.log("element", element))
-      //     )
-      // )
-    );
+
+    // setRowD(_.difference(rowD, selectedData));
+    // console.log(selectedData[0]._id);
+
+    // selectedData.map((item) => {
+    //   console.log(item._id);
+    // });
   };
   // console.log("data", rowD);
   return (
@@ -111,18 +121,24 @@ export const Grid = () => {
         className="ag-theme-alpine"
         style={{ height: "500px", width: "100%", textAlign: "center" }}
       >
-        <AgGridReact
-          columnDefs={columnDefs}
-          rowData={rowD}
-          defaultColDef={defaultColDef}
-          onCellValueChanged={(e) => {
-            handleChange(e);
-          }}
-          // onGridReady={onGridReady}
-          rowSelection={defaultColDef.rowSelection}
-          rowDataChangeDetectionStrategy="IdentityCheck"
-          onSelectionChanged={handleSelectionChange}
-        />
+        {loader ? (
+          <div>
+            <Spin size="large" />
+          </div>
+        ) : (
+          <AgGridReact
+            columnDefs={columnDefs}
+            rowData={rowD}
+            defaultColDef={defaultColDef}
+            onCellValueChanged={(e) => {
+              handleChange(e);
+            }}
+            // onGridReady={onGridReady}
+            rowSelection={defaultColDef.rowSelection}
+            // rowDataChangeDetectionStrategy="IdentityCheck"
+            onSelectionChanged={handleSelectionChange}
+          />
+        )}
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export const Grid = () => {
   const handleChange = (e) => {
     let d = [...rowD];
     let fieldName = e.colDef.field;
-    // console.log("name:",e.colDef.field)
+    console.log("name:", e.colDef.field);
     if (
       fieldName === "numOfStacks" ||
       fieldName === "RAM" ||
@@ -39,6 +39,7 @@ export const Grid = () => {
       d[e.rowIndex][e.colDef.field] = e.newValue;
     }
     setRowD(d);
+    // axios.put("http://localhost:5000/row", newData)
   };
   const [sumOfStacks, setSumOfStacks] = useState("");
   // const [idNum, setIdNum] = useState(rowD.length);
@@ -97,7 +98,7 @@ export const Grid = () => {
         .delete("http://localhost:5000/row/" + selectedData[0]._id)
         .then((res) => window.location.reload());
     } else {
-      alert("choos row");
+      alert("choose row");
     }
     // console.log("selected:", selectedData);
 
@@ -108,6 +109,7 @@ export const Grid = () => {
     //   console.log(item._id);
     // });
   };
+
   // console.log("data", rowD);
   return (
     <div>

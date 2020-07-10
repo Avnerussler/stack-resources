@@ -23,7 +23,7 @@ export const Grid = () => {
   const handleChange = (e) => {
     let d = [...rowD];
     let fieldName = e.colDef.field;
-    console.log("name:", e.colDef.field);
+    // console.log("name:", e.colDef.field);
     if (
       fieldName === "numOfStacks" ||
       fieldName === "RAM" ||
@@ -39,7 +39,13 @@ export const Grid = () => {
       d[e.rowIndex][e.colDef.field] = e.newValue;
     }
     setRowD(d);
-    // axios.put("http://localhost:5000/row", newData)
+    console.log(d[0]);
+    let rowUpdate = selected.getSelectedRows()[0]._id;
+    axios
+      .post("http://localhost:5000/row/update/" + rowUpdate, d[0])
+      .then((res) => {
+        console.log(res.data);
+      });
   };
   const [sumOfStacks, setSumOfStacks] = useState("");
   // const [idNum, setIdNum] = useState(rowD.length);
@@ -49,7 +55,7 @@ export const Grid = () => {
   }, [rowD]);
   const [loader, setLoader] = useState(true);
   useEffect(() => {
-    axios.get("http://localhost:5000/row").then((res) => {
+    axios.get("http://localhost:5000/row/").then((res) => {
       return setLoader(false), setRowD(res.data), console.log(res.data);
     });
   }, []);
@@ -94,9 +100,9 @@ export const Grid = () => {
     let selectedData;
     if (selected) {
       selectedData = selected.getSelectedRows();
-      axios
-        .delete("http://localhost:5000/row/" + selectedData[0]._id)
-        .then((res) => window.location.reload());
+      console.log(selectedData);
+      axios.delete("http://localhost:5000/row/" + selectedData[0]._id);
+      // .then((res) => window.location.reload());
     } else {
       alert("choose row");
     }

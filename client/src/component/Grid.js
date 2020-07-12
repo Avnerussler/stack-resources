@@ -22,6 +22,8 @@ const defaultColDef = {
 
 export const Grid = () => {
   const [rowD, setRowD] = useState("");
+  const [dataKey, setDataKey] = useState("");
+
   // console.log(rowD);
 
   const handleChange = (e) => {
@@ -46,14 +48,21 @@ export const Grid = () => {
     // console.log(d[0]);
     // console.log(selected.getSelectedRows());
     let rowUpdate = selected.getSelectedRows().map((item) => item._id);
-    console.log("rowUpdate:", rowUpdate);
-    console.log(selected.getSelectedRows());
+    // console.log("rowUpdate:", rowUpdate);
+    // console.log(selected.getSelectedRows());
     axios
-      .put(BASE_URL + "/row/update/" + rowUpdate, selected.getSelectedRows()[0])
+      .put(
+        BASE_URL + "/row/update/" + rowUpdate,
+        selected.getSelectedRows()[0] || dataKey
+      )
       .then((res) => {
-        console.log("res.data", res.data);
+        // console.log("res.data", res.data);
+        // setSelected("");
+        console.log("selected:", selected);
+        setDataKey("");
       });
   };
+  console.log(dataKey);
   const [sumOfStacks, setSumOfStacks] = useState("");
   // const [idNum, setIdNum] = useState(rowD.length);
 
@@ -63,7 +72,7 @@ export const Grid = () => {
   const [loader, setLoader] = useState(true);
   useEffect(() => {
     axios.get(BASE_URL + "/row").then((res) => {
-      return setLoader(false), setRowD(res.data), console.log(res.data);
+      return setLoader(false), setRowD(res.data);
     });
   }, []);
 
@@ -84,10 +93,9 @@ export const Grid = () => {
   };
   const [selected, setSelected] = useState();
   const handleSelectionChange = (e) => {
-    console.log("api", e.api);
+    // console.log("api", e.api);
     setSelected(e.api);
   };
-  console.log("selected:", selected);
 
   const addNewRow = () => {
     axios.post(BASE_URL + "/row", newData).then((res) => {
@@ -107,7 +115,7 @@ export const Grid = () => {
     let selectedData;
     if (selected) {
       selectedData = selected.getSelectedRows();
-      // console.log(selectedData);
+      console.log("selectedData:", selectedData);
       axios.delete(BASE_URL + "/row/" + selectedData[0]._id).then((res) => {
         for (let index = 0; index < rowD.length; index++) {
           if (rowD[index]._id === res.data._id) {
@@ -130,9 +138,12 @@ export const Grid = () => {
     //   console.log(item._id);
     // });
   };
-
   // console.log("data", rowD);
-
+  const onCellKeyPress = (e) => {
+    // console.log("node:", e.node.data);
+    setDataKey(e.node.data);
+  };
+  // console.log("dataKey:", dataKey);
   return (
     <div>
       <p>{`Sum Of Stacks: ${sumOfStacks}`}</p>
@@ -163,6 +174,8 @@ export const Grid = () => {
             // rowDataChangeDetectionStrategy="IdentityCheck"
             onSelectionChanged={handleSelectionChange}
             rowDragManaged={true}
+            defaultColDef={columnData.defaultColDef}
+            onCellKeyPress={(e) => onCellKeyPress(e)}
           />
         )}
       </div>

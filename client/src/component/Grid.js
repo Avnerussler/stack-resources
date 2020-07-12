@@ -6,8 +6,12 @@ import { AgGridReact } from "ag-grid-react";
 import { columnData } from "../data";
 import axios from "axios";
 import { Spin } from "antd";
+import { set } from "mongoose";
 
-const columnDefs = columnData;
+const BASE_URL = window.location.href.includes("localhost")
+  ? "http://localhost:5000"
+  : "";
+const columnDefs = columnData.columnDefs;
 
 const defaultColDef = {
   flex: 1,
@@ -39,12 +43,15 @@ export const Grid = () => {
       d[e.rowIndex][e.colDef.field] = e.newValue;
     }
     setRowD(d);
-    console.log(d[0]);
-    let rowUpdate = selected.getSelectedRows()[0]._id;
+    // console.log(d[0]);
+    // console.log(selected.getSelectedRows());
+    let rowUpdate = selected.getSelectedRows().map((item) => item._id);
+    console.log("rowUpdate:", rowUpdate);
+    console.log(selected.getSelectedRows());
     axios
-      .post("http://localhost:5000/row/update/" + rowUpdate, d[0])
+      .put(BASE_URL + "/row/update/" + rowUpdate, selected.getSelectedRows()[0])
       .then((res) => {
-        console.log(res.data);
+        console.log("res.data", res.data);
       });
   };
   const [sumOfStacks, setSumOfStacks] = useState("");
@@ -55,7 +62,7 @@ export const Grid = () => {
   }, [rowD]);
   const [loader, setLoader] = useState(true);
   useEffect(() => {
-    axios.get("http://localhost:5000/row/").then((res) => {
+    axios.get(BASE_URL + "/row").then((res) => {
       return setLoader(false), setRowD(res.data), console.log(res.data);
     });
   }, []);
@@ -77,14 +84,14 @@ export const Grid = () => {
   };
   const [selected, setSelected] = useState();
   const handleSelectionChange = (e) => {
+    console.log("api", e.api);
     setSelected(e.api);
   };
-  // console.log("selected:", selected);
+  console.log("selected:", selected);
 
   const addNewRow = () => {
-    axios.post("http://localhost:5000/row", newData).then((res) => {
-      console.log(res.data);
-      window.location.reload();
+    axios.post(BASE_URL + "/row", newData).then((res) => {
+      setRowD((rowD) => [...rowD, res.data]);
     });
     setLoader(false);
     // setRowD((rowD) => [...rowD, newData]);
@@ -100,9 +107,17 @@ export const Grid = () => {
     let selectedData;
     if (selected) {
       selectedData = selected.getSelectedRows();
-      console.log(selectedData);
-      axios.delete("http://localhost:5000/row/" + selectedData[0]._id);
-      // .then((res) => window.location.reload());
+      // console.log(selectedData);
+      axios.delete(BASE_URL + "/row/" + selectedData[0]._id).then((res) => {
+        for (let index = 0; index < rowD.length; index++) {
+          if (rowD[index]._id === res.data._id) {
+            // console.log(rowD[index]);
+            // console.log(index);
+            setRowD(rowD.filter((item) => item._id !== res.data._id));
+          }
+        }
+      });
+      setSelected("");
     } else {
       alert("choose row");
     }
@@ -117,6 +132,7 @@ export const Grid = () => {
   };
 
   // console.log("data", rowD);
+
   return (
     <div>
       <p>{`Sum Of Stacks: ${sumOfStacks}`}</p>
@@ -126,6 +142,7 @@ export const Grid = () => {
       <button onClick={removeSelected}>Remove Selected</button>
 
       <div
+        id="myGrid"
         className="ag-theme-alpine"
         style={{ height: "500px", width: "100%", textAlign: "center" }}
       >
@@ -145,6 +162,7 @@ export const Grid = () => {
             rowSelection={defaultColDef.rowSelection}
             // rowDataChangeDetectionStrategy="IdentityCheck"
             onSelectionChanged={handleSelectionChange}
+            rowDragManaged={true}
           />
         )}
       </div>

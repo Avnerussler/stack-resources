@@ -78,6 +78,7 @@ export const Grid = () => {
 
   let sumOfRam = _.sumBy(rowD, "RAM") / 1024;
   let sumAllocationCapacity = _.sumBy(rowD, "allocationCapacity") / 1024;
+  let sumPhysicalUsage = _.sumBy(rowD, "CPU");
 
   let newData = {
     department: "",
@@ -146,9 +147,10 @@ export const Grid = () => {
   // console.log("dataKey:", dataKey);
   return (
     <div>
-      <p>{`Sum Of Stacks: ${sumOfStacks}`}</p>
-      <p>{`Sum Of RAM: ${sumOfRam}`}</p>
-      <p>{`Sum Of Allocation Capacity: ${sumAllocationCapacity}`}</p>
+      <p>{`Stacks: ${sumOfStacks}`}</p>
+      <p>{`RAM [GB]: ${sumOfRam}`}</p>
+      <p>{`Allocation Capacity [GB]: ${sumAllocationCapacity}`}</p>
+      <p>{`Physical Usage [GB]: ${sumPhysicalUsage}`}</p>
       <button onClick={addNewRow}>add row</button>
       <button onClick={removeSelected}>Remove Selected</button>
 

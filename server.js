@@ -10,7 +10,9 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.ATLAS_URI;
+const uri = process.env.PORT
+  ? process.env.ATLAS_URI
+  : process.env.ATLAS_URI_DEV;
 // const uriDev=process.env.ATLAS_URI_dev
 
 mongoose.connect(uri, {
@@ -26,9 +28,11 @@ connection.once("open", () => {
 
 const row = require("./routes/row");
 const column = require("./routes/column");
+const openStackLabHWUpgrade = require("./routes/openstackLabHWUpgrade");
 
 app.use("/row", row);
 app.use("/column", column);
+app.use("/openStackLabHWUpgrade", openStackLabHWUpgrade);
 
 app.use(express.static(path.join(__dirname, "/client/build")));
 app.get("*", function (req, res) {

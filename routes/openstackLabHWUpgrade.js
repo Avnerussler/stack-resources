@@ -9,30 +9,20 @@ router.route("/").get((req, res) => {
 });
 
 router.route("/").post((req, res) => {
-  const id = req.body.department;
-  const department = req.body.department;
-  const numOfStacks = Number(req.body.numOfStacks);
-  const usage = req.body.usage;
-  const owners = req.body.owners;
-  const stackType = req.body.stackType;
+  const Rh = req.body.RH;
+  const hostName = req.body.hostname;
+  const status = req.body.status;
+  const VCPUs = Number(req.body.VCPUs);
   const RAM = Number(req.body.RAM);
-  const notAssigned = Number(req.body.notAssigned);
-  const allocationCapacity = Number(req.body.allocationCapacity);
-  const physicalUsage = Number(req.body.physicalUsage);
-  const CPU = Number(req.body.CPU);
+  const localStorage = Number(req.body.localStorage);
 
   const openstackLabHWUpgrade = new OpenstackLabHWUpgrade({
-    id,
-    department,
-    numOfStacks,
-    usage,
-    owners,
-    stackType,
+    Rh,
+    hostName,
+    status,
+    VCPUs,
     RAM,
-    notAssigned,
-    allocationCapacity,
-    physicalUsage,
-    CPU,
+    localStorage,
   });
   openstackLabHWUpgrade
     .save()

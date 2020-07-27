@@ -23,13 +23,14 @@ const defaultColDef = {
 export const Grid = () => {
   const [rowD, setRowD] = useState("");
   const [dataKey, setDataKey] = useState("");
-
-  // console.log(rowD);
+  const [selected, setSelected] = useState("");
+  const [keyDown, setKeyDown] = useState("");
+  const [sumOfStacks, setSumOfStacks] = useState("");
+  const [loader, setLoader] = useState(true);
 
   const handleChange = (e) => {
     let d = [...rowD];
     let fieldName = e.colDef.field;
-    // console.log("name:", e.colDef.field);
     if (
       fieldName === "numOfStacks" ||
       fieldName === "RAM" ||
@@ -39,37 +40,19 @@ export const Grid = () => {
       fieldName === "CPU"
     ) {
       d[e.rowIndex][e.colDef.field] = parseFloat(e.newValue);
-
-      // console.log("field is number");
     } else {
       d[e.rowIndex][e.colDef.field] = e.newValue;
     }
     setRowD(d);
-    // console.log(d[0]);
-    // console.log(selected.getSelectedRows());
-    let rowUpdate = selected.getSelectedRows().map((item) => item._id);
-    // console.log("rowUpdate:", rowUpdate);
-    // console.log(selected.getSelectedRows());
-    axios
-      .put(
-        BASE_URL + "/row/update/" + rowUpdate,
-        selected.getSelectedRows()[0] || dataKey
-      )
-      .then((res) => {
-        // console.log("res.data", res.data);
-        // setSelected("");
-        console.log("selected:", selected);
-        setDataKey("");
-      });
+
+    let rowUpdate = dataKey._id;
+
+    axios.put(BASE_URL + "/row/update/" + rowUpdate, dataKey).then((res) => {});
   };
-  console.log(dataKey);
-  const [sumOfStacks, setSumOfStacks] = useState("");
-  // const [idNum, setIdNum] = useState(rowD.length);
 
   useEffect(() => {
     setSumOfStacks(_.sumBy(rowD, "numOfStacks"));
   }, [rowD]);
-  const [loader, setLoader] = useState(true);
   useEffect(() => {
     axios.get(BASE_URL + "/row").then((res) => {
       return setLoader(false), setRowD(res.data);
@@ -79,7 +62,7 @@ export const Grid = () => {
   let sumOfRam = _.sumBy(rowD, "RAM") / 1024;
   let sumAllocationCapacity = _.sumBy(rowD, "allocationCapacity") / 1024;
   let sumPhysicalUsage = _.sumBy(rowD, "CPU");
-
+  console.log("selected", selected);
   let newData = {
     department: "",
     numOfStacks: "",
@@ -92,7 +75,6 @@ export const Grid = () => {
     physicalUsage: "",
     CPU: "",
   };
-  const [selected, setSelected] = useState();
   const handleSelectionChange = (e) => {
     // console.log("api", e.api);
     setSelected(e.api);
@@ -103,14 +85,19 @@ export const Grid = () => {
       setRowD((rowD) => [...rowD, res.data]);
     });
     setLoader(false);
-    // setRowD((rowD) => [...rowD, newData]);
-    // setIdNum(idNum + 1);
   };
-  // let gridApi;
-  // const onGridReady = (event) => {
-  //   gridApi = event.api;
-  //   console.log(gridApi);
-  // };
+  const onRowDragEnter = (e) => {
+    console.log("onRowDragEnter", e);
+  };
+  const onRowDragEnd = (e) => {
+    console.log("onRowDragEnd", e);
+  };
+  const onRowDragMove = (e) => {
+    console.log("onRowDragMove", e);
+  };
+  const onRowDragLeave = (e) => {
+    // console.log("onRowDragLeave", e);
+  };
 
   const removeSelected = () => {
     let selectedData;
@@ -120,8 +107,6 @@ export const Grid = () => {
       axios.delete(BASE_URL + "/row/" + selectedData[0]._id).then((res) => {
         for (let index = 0; index < rowD.length; index++) {
           if (rowD[index]._id === res.data._id) {
-            // console.log(rowD[index]);
-            // console.log(index);
             setRowD(rowD.filter((item) => item._id !== res.data._id));
           }
         }
@@ -130,21 +115,14 @@ export const Grid = () => {
     } else {
       alert("choose row");
     }
-    // console.log("selected:", selectedData);
-
-    // setRowD(_.difference(rowD, selectedData));
-    // console.log(selectedData[0]._id);
-
-    // selectedData.map((item) => {
-    //   console.log(item._id);
-    // });
   };
-  // console.log("data", rowD);
   const onCellKeyPress = (e) => {
-    // console.log("node:", e.node.data);
     setDataKey(e.node.data);
   };
-  // console.log("dataKey:", dataKey);
+  const onCellKeyDown = (e) => {
+    setKeyDown(e.node.data);
+  };
+  console.log("keyDown", keyDown);
   return (
     <div>
       <p>{`Stacks: ${sumOfStacks}`}</p>
@@ -167,17 +145,21 @@ export const Grid = () => {
           <AgGridReact
             columnDefs={columnDefs}
             rowData={rowD}
-            defaultColDef={defaultColDef}
             onCellValueChanged={(e) => {
               handleChange(e);
             }}
-            // onGridReady={onGridReady}
             rowSelection={defaultColDef.rowSelection}
-            // rowDataChangeDetectionStrategy="IdentityCheck"
             onSelectionChanged={handleSelectionChange}
-            rowDragManaged={true}
+            // rowDragManaged={true}
+            // animateRows={true}
+            // enableMultiRowDragging={true}
             defaultColDef={columnData.defaultColDef}
             onCellKeyPress={(e) => onCellKeyPress(e)}
+            onCellKeyDown={(e) => onCellKeyDown(e)}
+            onRowDragEnter={(e) => onRowDragEnter(e)}
+            onRowDragEnd={(e) => onRowDragEnd(e)}
+            onRowDragMove={(e) => onRowDragMove(e)}
+            onRowDragLeave={(e) => onRowDragLeave(e)}
           />
         )}
       </div>

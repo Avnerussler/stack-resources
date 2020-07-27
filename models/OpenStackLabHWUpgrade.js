@@ -4,16 +4,12 @@ const Schema = mongoose.Schema;
 
 const OpenStackLabHWUpgradeSchema = new Schema(
   {
-    department: { type: String },
-    numOfStacks: { type: Number },
-    usage: { type: String },
-    owners: { type: String },
-    stackType: { type: String },
+    Rh: { type: String },
+    hostName: { type: String },
+    status: { type: String },
+    VCPUs: { type: Number },
     RAM: { type: Number },
-    notAssigned: { type: Number },
-    allocationCapacity: { type: Number },
-    physicalUsage: { type: Number },
-    CPU: { type: Number },
+    localStorage: { type: Number },
   },
   {
     timestamps: true,

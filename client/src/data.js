@@ -36,4 +36,5 @@ export const columnData = {
     filter: true,
     resizable: true,
   },
+  // rowSelection: "multiple",
 };
